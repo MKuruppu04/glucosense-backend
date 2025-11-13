@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | GlucoSense</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        .admin-sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: #1e293b;
+            color: white;
+            padding: 2rem 0;
+            overflow-y: auto;
+        }
+        .admin-sidebar .logo {
+            padding: 0 1.5rem;
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+        }
+        .admin-sidebar nav {
+            list-style: none;
+        }
+        .admin-sidebar nav a {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            color: #94a3b8;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        .admin-sidebar nav a:hover,
+        .admin-sidebar nav a.active {
+            background: rgba(14, 165, 233, 0.1);
+            color: #0ea5e9;
+            border-left: 3px solid #0ea5e9;
+        }
+        .admin-content {
+            margin-left: 250px;
+            padding: 2rem;
+            min-height: 100vh;
+            background: var(--background);
+        }
+        .admin-header {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow);
+        }
+        .stat-card .icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        .stat-card.users .icon {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .stat-card.readings .icon {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .stat-card.alerts .icon {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .stat-card h3 {
+            color: var(--light-text);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+        .data-table {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        .data-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .data-table th {
+            background: var(--light-bg);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        .data-table td {
+            padding: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+        .data-table tr:hover {
+            background: var(--light-bg);
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .badge.active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .badge.inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .btn-view {
+            padding: 0.5rem 1rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .btn-view:hover {
+            background: var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-sidebar">
+        <div class="logo">
+            <i class="fas fa-shield-alt"></i> Admin Panel
+        </div>
+        <nav>
+            <a href="#" class="active" data-view="overview">
+                <i class="fas fa-tachometer-alt"></i> Overview
+            </a>
+            <a href="#" data-view="users">
+                <i class="fas fa-users"></i> Users
+            </a>
+            <a href="#" data-view="alerts">
+                <i class="fas fa-bell"></i> Alerts
+            </a>
+            <a href="#" data-view="team">
+                <i class="fas fa-user-shield"></i> Team
+            </a>
+            <a href="#" onclick="adminLogout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </nav>
+    </div>
+
+    <div class="admin-content">
+        <div class="admin-header">
+            <div>
+                <h1>Admin Dashboard</h1>
+                <p>Welcome, <span id="adminName">Admin</span></p>
+            </div>
+            <button class="btn-logout" onclick="adminLogout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+
+        <div id="overview-view">
+            <div class="stats-grid">
+                <div class="stat-card users">
+                    <div class="icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Total Users</h3>
+                    <div class="value" id="totalUsers">0</div>
+                </div>
+                <div class="stat-card readings">
+                    <div class="icon">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h3>Total Readings</h3>
+                    <div class="value" id="totalReadings">0</div>
+                </div>
+                <div class="stat-card alerts">
+                    <div class="icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h3>Critical Alerts</h3>
+                    <div class="value" id="criticalAlerts">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon" style="background: #fef3c7; color: #92400e;">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <h3>Active Users</h3>
+                    <div class="value" id="activeUsers">0</div>
+                </div>
+            </div>
+
+            <div class="data-table">
+                <h2 style="padding: 1.5rem 1rem 0;">Recent Users</h2>
+                <table id="recentUsersTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Joined</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 2rem;">
+                                Loading...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="users-view" style="display:none;">
+            <h2>All Users</h2>
+            <div class="data-table">
+                <table id="allUsersTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Joined</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 2rem;">
+                                Loading...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="alerts-view" style="display:none;">
+            <h2>Recent Alerts</h2>
+            <div class="data-table">
+                <table id="alertsTable">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Type</th>
+                            <th>Glucose</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 2rem;">
+                                Loading...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="team-view" style="display:none;">
+            <h2>Team Members</h2>
+            <p>Team management features coming soon...</p>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = window.location.hostname.includes('localhost')
+            ? 'http://localhost:5000/api/v1'
+            : 'https://glucosense-backend-it5bh4mv1-manuth-kuruppus-projects.vercel.app/api/v1';
+        let adminToken = localStorage.getItem('adminToken');
+
+        // Check admin authentication
+        if (!adminToken) {
+            window.location.href = 'admin-login.html';
+        }
+
+        // View switching
+        document.querySelectorAll('.admin-sidebar nav a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                if (link.dataset.view) {
+                    e.preventDefault();
+                    const view = link.dataset.view;
+                    
+                    // Update active link
+                    document.querySelectorAll('.admin-sidebar nav a').forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                    
+                    // Show view
+                    document.querySelectorAll('[id$="-view"]').forEach(v => v.style.display = 'none');
+                    document.getElementById(`${view}-view`).style.display = 'block';
+                }
+            });
+        });
+
+        // Load admin data
+        async function loadAdminStats() {
+            try {
+                const response = await fetch(`${API_URL}/admin/stats`, {
+                    headers: {
+                        'Authorization': `Bearer ${adminToken}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const stats = data.data;
+                    
+                    document.getElementById('totalUsers').textContent = stats.users.total;
+                    document.getElementById('activeUsers').textContent = stats.users.active;
+                    document.getElementById('totalReadings').textContent = stats.readings.total;
+                    document.getElementById('criticalAlerts').textContent = stats.alerts.critical;
+
+                    // Load recent users
+                    loadRecentUsers(stats.recent.users);
+                } else if (response.status === 401) {
+                    adminLogout();
+                }
+            } catch (error) {
+                console.error('Error loading admin stats:', error);
+            }
+        }
+
+        function loadRecentUsers(users) {
+            const tbody = document.querySelector('#recentUsersTable tbody');
+            if (users && users.length > 0) {
+                tbody.innerHTML = users.map(user => `
+                    <tr>
+                        <td>${user.profile.firstName} ${user.profile.lastName}</td>
+                        <td>${user.email}</td>
+                        <td>${new Date(user.createdAt).toLocaleDateString()}</td>
+                        <td><span class="badge active">Active</span></td>
+                        <td><button class="btn-view">View</button></td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        function adminLogout() {
+            localStorage.removeItem('adminToken');
+            window.location.href = 'admin-login.html';
+        }
+
+        // Load data
+        loadAdminStats();
+    </script>
+</body>
+</html>

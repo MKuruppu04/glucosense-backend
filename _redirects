@@ -1,0 +1,5 @@
+# API Proxy - Forward API calls to backend
+/api/*  https://glucosense-backend-production.up.railway.app/api/:splat  200
+
+# SPA Routing - All other routes go to index.html
+/*  /index.html  200

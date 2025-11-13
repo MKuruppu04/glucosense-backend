@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard | GlucoSense</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        .dashboard-nav {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+        }
+        .dashboard-nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        .btn-logout {
+            padding: 0.5rem 1rem;
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .btn-logout:hover {
+            background: #dc2626;
+        }
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        .welcome-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+        }
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .stat-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow);
+        }
+        .stat-card h3 {
+            color: var(--light-text);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+        .tab {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+        .tab.active {
+            border-bottom-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-nav">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-heartbeat"></i>
+                <span>GlucoSense</span>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <span id="userName">Loading...</span>
+                <button class="btn-logout" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-container">
+        <div class="welcome-section">
+            <h1>Welcome back, <span id="welcomeName">User</span>!</h1>
+            <p>Your health monitoring dashboard</p>
+        </div>
+
+        <div class="quick-stats">
+            <div class="stat-card">
+                <h3>Latest Glucose</h3>
+                <div class="value" id="latestGlucose">--</div>
+                <small>mg/dL</small>
+            </div>
+            <div class="stat-card">
+                <h3>Average (30 days)</h3>
+                <div class="value" id="avgGlucose">--</div>
+                <small>mg/dL</small>
+            </div>
+            <div class="stat-card">
+                <h3>Total Readings</h3>
+                <div class="value" id="totalReadings">--</div>
+                <small>measurements</small>
+            </div>
+            <div class="stat-card">
+                <h3>Time in Range</h3>
+                <div class="value" id="timeInRange">--</div>
+                <small>%</small>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" data-tab="monitor">
+                <i class="fas fa-chart-line"></i> Live Monitor
+            </div>
+            <div class="tab" data-tab="history">
+                <i class="fas fa-history"></i> History
+            </div>
+            <div class="tab" data-tab="settings">
+                <i class="fas fa-cog"></i> Settings
+            </div>
+            <div class="tab" data-tab="guardians">
+                <i class="fas fa-users"></i> Guardians
+            </div>
+        </div>
+
+        <div id="monitor" class="tab-content active">
+            <iframe 
+                src="index.html#monitor" 
+                width="100%" 
+                height="800px" 
+                frameborder="0"
+                style="border-radius: 1rem; box-shadow: var(--shadow);"
+            ></iframe>
+        </div>
+
+        <div id="history" class="tab-content">
+            <div class="chart-card">
+                <h2>Glucose History</h2>
+                <div id="historyLoading">Loading your glucose history...</div>
+                <div id="historyContent" style="display:none;">
+                    <canvas id="historyChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div id="settings" class="tab-content">
+            <div class="card-bg" style="padding: 2rem; border-radius: 1rem;">
+                <h2>Profile Settings</h2>
+                <p>Email: <span id="userEmail">--</span></p>
+                <p>Phone: <span id="userPhone">--</span></p>
+                <p>Member since: <span id="memberSince">--</span></p>
+                
+                <h3 style="margin-top: 2rem;">Alert Settings</h3>
+                <p>Critical High: <span id="criticalHigh">--</span> mg/dL</p>
+                <p>Critical Low: <span id="criticalLow">--</span> mg/dL</p>
+            </div>
+        </div>
+
+        <div id="guardians" class="tab-content">
+            <div class="card-bg" style="padding: 2rem; border-radius: 1rem;">
+                <h2>Emergency Contacts</h2>
+                <div id="guardiansList">
+                    <p>No guardians added yet.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = window.location.hostname.includes('localhost')
+            ? 'http://localhost:5000/api/v1'
+            : '/api/v1';
+        let token = localStorage.getItem('token');
+        let currentUser = null;
+
+        // Check authentication
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.dataset.tab;
+                
+                // Update active tab
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Show content
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(tabName).classList.add('active');
+            });
+        });
+
+        // Fetch user data with timeout
+        async function loadUserData() {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+                
+                const response = await fetch(`${API_URL}/auth/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    currentUser = data.data;
+                    
+                    // Update UI
+                    const firstName = currentUser.profile.firstName;
+                    document.getElementById('welcomeName').textContent = firstName;
+                    document.getElementById('userName').textContent = `${firstName} ${currentUser.profile.lastName}`;
+                    document.getElementById('userAvatar').textContent = firstName[0].toUpperCase();
+                    document.getElementById('userEmail').textContent = currentUser.email;
+                    document.getElementById('userPhone').textContent = currentUser.profile.phoneNumber;
+                    document.getElementById('memberSince').textContent = new Date(currentUser.createdAt).toLocaleDateString();
+                    document.getElementById('criticalHigh').textContent = currentUser.alertSettings.criticalHigh;
+                    document.getElementById('criticalLow').textContent = currentUser.alertSettings.criticalLow;
+
+                    // Load guardians
+                    if (currentUser.guardians && currentUser.guardians.length > 0) {
+                        const guardiansList = currentUser.guardians.map(g => 
+                            `<div style="padding: 1rem; background: var(--light-bg); margin: 0.5rem 0; border-radius: 0.5rem;">
+                                <strong>${g.name}</strong> (${g.relationship})<br>
+                                <small>${g.phone}</small>
+                            </div>`
+                        ).join('');
+                        document.getElementById('guardiansList').innerHTML = guardiansList;
+                    }
+                } else {
+                    logout();
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        }
+
+        // Fetch glucose stats with timeout
+        async function loadStats() {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+                
+                const response = await fetch(`${API_URL}/glucose/stats`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const stats = data.data;
+                    
+                    document.getElementById('avgGlucose').textContent = stats.average || '--';
+                    document.getElementById('totalReadings').textContent = stats.count || 0;
+                    document.getElementById('timeInRange').textContent = stats.timeInRange || '--';
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+                // Set defaults if loading fails
+                document.getElementById('avgGlucose').textContent = '--';
+                document.getElementById('totalReadings').textContent = '0';
+                document.getElementById('timeInRange').textContent = '--';
+            }
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
+
+        // Load data on page load
+        loadUserData();
+        loadStats();
+    </script>
+</body>
+</html>

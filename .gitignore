@@ -1,6 +1,5 @@
-# Dependencies
-node_modules/
-package-lock.json
+# Server files (not deployed with static site - runs on Raspberry Pi)
+server/
 
 # Environment variables
 .env
@@ -8,20 +7,38 @@ package-lock.json
 .env.production
 
 # Logs
-logs/
 *.log
 npm-debug.log*
+logs/
 
 # OS files
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# IDE
+# IDE files
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
 
-# Build
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+
+# Node modules (if any)
+node_modules/
+
+# Build outputs
 dist/
 build/
+
+# Deployment
+.netlify/
+windsurf_deployment.yaml
