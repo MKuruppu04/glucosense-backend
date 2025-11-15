@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Blood Glucose Monitor | Non-Invasive IR & PPG Sensor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <i class="fas fa-heartbeat"></i>
+                <span>GlucoSense</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#monitor">Live Monitor</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#sensors">Technology</a></li>
+                <li><a href="#data">Historical Data</a></li>
+            </ul>
+            <div class="hamburger">
+                <div class="line"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+            </div>
+        </nav>
+    </header>
+
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <div class="hero-icon">
+                <i class="fas fa-heartbeat"></i>
+            </div>
+            <h1>Non-Invasive Blood Glucose <span class="highlight">Monitoring System</span></h1>
+            <p class="tagline">Real-time glucose level measurement using IR & MAX30102 PPG sensors</p>
+            <div class="cta-buttons">
+                <a href="#monitor" class="btn primary">
+                    <i class="fas fa-chart-line"></i> View Live Monitor
+                </a>
+                <a href="#about" class="btn secondary">
+                    <i class="fas fa-info-circle"></i> Learn More
+                </a>
+            </div>
+        </div>
+        <div class="scroll-down">
+            <span>Scroll Down</span>
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>
+
+    <section id="monitor" class="section monitor-section">
+        <h2 class="section-title">
+            <i class="fas fa-chart-line"></i> Real-Time Glucose Monitor
+        </h2>
+        
+        <div class="status-bar">
+            <div class="status-item">
+                <i class="fas fa-circle status-indicator" id="status-indicator"></i>
+                <span id="status-text">Initializing...</span>
+            </div>
+            <div class="status-item" id="data-source">
+                <i class="fas fa-vial"></i> Simulation Mode
+            </div>
+            <div class="status-item connection-status disconnected" id="connection-status">
+                <i class="fas fa-times-circle"></i> Not Connected
+            </div>
+            <div class="status-item">
+                <i class="fas fa-clock"></i>
+                <span id="current-time">--:--:--</span>
+            </div>
+        </div>
+
+        <div class="monitor-grid">
+            <div class="glucose-display">
+                <div class="glucose-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-tint"></i> Current Glucose Level</h3>
+                        <span class="badge" id="glucose-status">Normal</span>
+                    </div>
+                    <div class="glucose-value">
+                        <span class="value" id="glucose-value">--</span>
+                        <span class="unit">mg/dL</span>
+                    </div>
+                    <div class="glucose-trend">
+                        <i class="fas fa-arrow-right" id="trend-icon"></i>
+                        <span id="trend-text">Stable</span>
+                    </div>
+                    <div class="reference-range">
+                        <p><strong>Normal Range:</strong> 70-140 mg/dL</p>
+                        <div class="range-bar">
+                            <div class="range-segment low">Low (&lt;70)</div>
+                            <div class="range-segment normal">Normal (70-140)</div>
+                            <div class="range-segment high">High (&gt;140)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sensor-readings">
+                <div class="sensor-card">
+                    <div class="card-header">
+                        <h4><i class="fas fa-wifi"></i> MAX30102 PPG Sensor</h4>
+                    </div>
+                    <div class="sensor-data">
+                        <div class="data-row">
+                            <span class="label">Red LED:</span>
+                            <span class="value" id="red-led">--</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="label">IR LED:</span>
+                            <span class="value" id="ir-led">--</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="label">Heart Rate:</span>
+                            <span class="value" id="heart-rate">-- bpm</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="label">SpO2:</span>
+                            <span class="value" id="spo2">-- %</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sensor-card">
+                    <div class="card-header">
+                        <h4><i class="fas fa-lightbulb"></i> IR Sensor</h4>
+                    </div>
+                    <div class="sensor-data">
+                        <div class="data-row">
+                            <span class="label">IR Intensity:</span>
+                            <span class="value" id="ir-intensity">--</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="label">Absorption:</span>
+                            <span class="value" id="absorption">-- %</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="label">Signal Quality:</span>
+                            <span class="value" id="signal-quality">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3><i class="fas fa-chart-area"></i> Glucose Level Trend (Last 30 readings)</h3>
+                    <div class="chart-controls">
+                        <button class="btn-mode" id="mode-toggle-btn" title="Switch data source">
+                            <i class="fas fa-microchip"></i>
+                            <span>Connect to Raspberry Pi</span>
+                        </button>
+                        <button class="btn-icon" id="pause-btn" title="Pause monitoring">
+                            <i class="fas fa-pause"></i>
+                        </button>
+                        <button class="btn-icon" id="reset-btn" title="Reset chart">
+                            <i class="fas fa-redo"></i>
+                        </button>
+                    </div>
+                </div>
+                <canvas id="glucose-chart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="section">
+        <h2 class="section-title">About This Project</h2>
+        <div class="about-content">
+            <div class="about-text">
+                <h3>Non-Invasive Glucose Monitoring</h3>
+                <p>This project implements a real-time, non-invasive blood glucose monitoring system based on research in optical sensing technology. Using infrared (IR) spectroscopy combined with photoplethysmography (PPG), we can estimate blood glucose levels without the need for finger pricks or blood samples.</p>
+                
+                <h3>How It Works</h3>
+                <p>The system uses two primary sensing technologies:</p>
+                <ul class="feature-list">
+                    <li><i class="fas fa-check-circle"></i> <strong>MAX30102 PPG Sensor:</strong> Measures heart rate, blood oxygen saturation (SpO2), and provides red/infrared light absorption data</li>
+                    <li><i class="fas fa-check-circle"></i> <strong>IR Sensor:</strong> Detects infrared light absorption patterns that correlate with glucose concentration in blood</li>
+                </ul>
+
+                <h3>Key Features</h3>
+                <ul class="feature-list">
+                    <li><i class="fas fa-check-circle"></i> Real-time glucose level monitoring</li>
+                    <li><i class="fas fa-check-circle"></i> Non-invasive measurement</li>
+                    <li><i class="fas fa-check-circle"></i> Continuous data visualization</li>
+                    <li><i class="fas fa-check-circle"></i> Trend analysis and alerts</li>
+                    <li><i class="fas fa-check-circle"></i> Historical data tracking</li>
+                </ul>
+            </div>
+            <div class="about-image">
+                <div class="device-illustration">
+                    <i class="fas fa-hand-holding-medical"></i>
+                    <p>Sensor Placement</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="sensors" class="section tech-section">
+        <h2 class="section-title">Sensor Technology</h2>
+        <div class="tech-grid">
+            <div class="tech-card">
+                <div class="tech-icon">
+                    <i class="fas fa-microchip"></i>
+                </div>
+                <h3>MAX30102 Sensor</h3>
+                <p>Integrated pulse oximetry and heart-rate monitor module</p>
+                <ul>
+                    <li>Red LED (660nm) and IR LED (880nm)</li>
+                    <li>High-sensitivity photodetector</li>
+                    <li>I2C digital interface</li>
+                    <li>Ultra-low power consumption</li>
+                </ul>
+            </div>
+
+            <div class="tech-card">
+                <div class="tech-icon">
+                    <i class="fas fa-radiation"></i>
+                </div>
+                <h3>IR Spectroscopy</h3>
+                <p>Non-invasive optical measurement technique</p>
+                <ul>
+                    <li>Near-infrared wavelength detection</li>
+                    <li>Glucose molecule absorption analysis</li>
+                    <li>Real-time signal processing</li>
+                    <li>Calibration algorithms</li>
+                </ul>
+            </div>
+
+            <div class="tech-card">
+                <div class="tech-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3>Signal Processing</h3>
+                <p>Advanced algorithms for accurate readings</p>
+                <ul>
+                    <li>Machine learning models</li>
+                    <li>Noise reduction filters</li>
+                    <li>Calibration and normalization</li>
+                    <li>Real-time data analysis</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="data" class="section">
+        <h2 class="section-title">
+            <i class="fas fa-database"></i> Statistics & Analysis
+        </h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-value" id="avg-glucose">--</div>
+                <div class="stat-label">Average Glucose</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-arrow-up"></i>
+                </div>
+                <div class="stat-value" id="max-glucose">--</div>
+                <div class="stat-label">Peak Level</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-arrow-down"></i>
+                </div>
+                <div class="stat-value" id="min-glucose">--</div>
+                <div class="stat-label">Lowest Level</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-value" id="reading-count">0</div>
+                <div class="stat-label">Total Readings</div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4><i class="fas fa-exclamation-triangle"></i> Medical Disclaimer</h4>
+                <p>This is a research project and simulation. This system is not FDA approved and should not be used for medical diagnosis or treatment decisions. Always consult with healthcare professionals for medical advice.</p>
+            </div>
+            <div class="footer-section">
+                <h4><i class="fas fa-book"></i> Research Reference</h4>
+                <p>Based on research in non-invasive glucose monitoring using IR spectroscopy and photoplethysmography techniques with MAX30102 sensor.</p>
+            </div>
+            <p class="copyright">&copy; <span id="year"></span> Blood Glucose Monitoring Project. For Educational & Research Purposes Only.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="scripts/main.js"></script>
+</body>
+</html>

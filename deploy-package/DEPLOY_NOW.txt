@@ -1,0 +1,86 @@
+═══════════════════════════════════════════════════════════════════
+   🚀 DEPLOY YOUR GLUCOSE MONITOR IN 2 MINUTES! 🚀
+═══════════════════════════════════════════════════════════════════
+
+📂 This folder contains everything needed to publish your website!
+
+══════════════════════════════════════════════════════════════════
+EASIEST METHOD - NETLIFY DRAG & DROP (NO CODING!)
+══════════════════════════════════════════════════════════════════
+
+Step 1: Go to this website
+   👉 https://app.netlify.com/drop
+
+Step 2: Create free account (takes 30 seconds)
+   - Click "Sign up"
+   - Use email or GitHub
+   - Verify email
+
+Step 3: Drag THIS ENTIRE FOLDER onto the page
+   - Select everything in this "deploy-package" folder
+   - Drag and drop onto the Netlify page
+   - Wait 30 seconds
+
+Step 4: DONE! 🎉
+   - Your website is now LIVE on the internet!
+   - You'll get a URL like: https://amazing-name-123456.netlify.app
+   - Share this URL with ANYONE in the world!
+
+Step 5: (Optional) Change the website name
+   - Click "Site settings" on Netlify
+   - Click "Change site name"  
+   - Enter: glucose-monitor
+   - New URL: https://glucose-monitor.netlify.app
+
+══════════════════════════════════════════════════════════════════
+WHAT PEOPLE WILL SEE:
+══════════════════════════════════════════════════════════════════
+
+✅ Your beautiful glucose monitoring interface
+✅ Live simulation with real-time charts
+✅ All features working perfectly
+✅ Professional medical-themed design
+✅ Responsive (works on phones, tablets, computers)
+
+══════════════════════════════════════════════════════════════════
+CONNECTING YOUR RASPBERRY PI (Later):
+══════════════════════════════════════════════════════════════════
+
+The website works in SIMULATION mode by default (perfect for demos!)
+
+To connect your Raspberry Pi later:
+1. Start your Raspberry Pi server (see server/SETUP.md)
+2. Click "Connect to Raspberry Pi" button on the website
+3. Enter your Raspberry Pi IP address
+4. See REAL sensor data!
+
+Note: Only YOU can connect to your Raspberry Pi (it's on your home network)
+Everyone else will see the simulation - which is perfect for demonstrations!
+
+══════════════════════════════════════════════════════════════════
+ALTERNATIVE METHODS:
+══════════════════════════════════════════════════════════════════
+
+See DEPLOYMENT.md in the main folder for other options:
+- GitHub Pages (free forever)
+- Vercel (super fast)
+- Firebase (Google)
+- And more!
+
+══════════════════════════════════════════════════════════════════
+NEED HELP?
+══════════════════════════════════════════════════════════════════
+
+Read the full DEPLOYMENT.md guide for:
+- Detailed instructions
+- Troubleshooting
+- Advanced options
+- Custom domains
+- Making Raspberry Pi accessible online
+
+══════════════════════════════════════════════════════════════════
+
+🎯 QUICK START: Just go to https://app.netlify.com/drop and drag
+   this folder! Your website will be live in 2 minutes!
+
+══════════════════════════════════════════════════════════════════
